@@ -10,4 +10,5 @@ features = "0.10.0"
 native-tls = "0.2.14"
 postgres = { version = "0.19.10", features = ["with-serde_json-1"] }
 postgres-native-tls = "0.5.1"
+rand = "0.9.1"
 

@@ -828,6 +828,7 @@ dependencies = [
  "native-tls",
  "postgres",
  "postgres-native-tls",
+ "rand",
 ]
 
 [[package]]
