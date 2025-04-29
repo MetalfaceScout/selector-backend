@@ -241,6 +241,12 @@ dependencies = [
 ]
 
 [[package]]
+name = "derive"
+version = "1.0.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "72e3ae26c830a573f2e231fc2475f71fce4705609097cb9523abfc4007caed0b"
+
+[[package]]
 name = "digest"
 version = "0.10.7"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -823,12 +829,15 @@ name = "selector-backend"
 version = "0.1.0"
 dependencies = [
  "clap",
+ "derive",
  "dotenvy",
  "features",
  "native-tls",
  "postgres",
  "postgres-native-tls",
  "rand",
+ "serde",
+ "serde_json",
 ]
 
 [[package]]

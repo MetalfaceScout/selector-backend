@@ -31,10 +31,15 @@ pub fn set_database_params() -> DatabaseParameters {
 
     dotenv().expect("Failed to load .env file");
     
-    let host = env::var("DATABASE_HOST").unwrap();
-    let dbname = env::var("DATABASE_NAME").unwrap();
-    let user = env::var("DATABASE_USERNAME").unwrap();
-    let password = env::var("DATABASE_PASSWORD").unwrap();
+    let host = env::var("DATABASE_HOST")
+        .expect("Could not load DATABASE_HOST from environment. Contact Metalface if you're seeing this and you're not him.");
+    let dbname = env::var("DATABASE_NAME")
+        .expect("Could not load DATABASE_NAME from environment. Contact Metalface if you're seeing this and you're not him.");
+    let user = env::var("DATABASE_USERNAME")
+        .expect("Could not load DATABASE_USERNAME from environment. Contact Metalface if you're seeing this and you're not him.");
+    let password = env::var("DATABASE_PASSWORD")
+        .expect("Could not load DATABASE_PASSWORD from environment. Contact Metalface if you're seeing this and you're not him.");
+
 
     let params = DatabaseParameters { host, dbname, user, password };
     return params;

@@ -1,9 +1,12 @@
 mod selection;
 mod stats;
 mod db;
+mod output;
 
 use core::panic;
 use clap::Parser;
+use output::output_game_as_json;
+use serde::Serialize;
 
 /// The backend of the Team Selector by Metalface - Intended to be used by the website
 #[derive(Parser, Debug)]
@@ -72,10 +75,11 @@ enum MVPCalculationMode {
     Last_N_Mean,
 }
 
-#[derive(Clone)]
+#[derive(Clone, Serialize)]
 struct PlayerSlot {
-    position : u64,
-    player_id : i64,
+    position: u64,
+    position_pretty: String, 
+    player_id: i64,
     smvp: f64,
     player_name: String
 }
@@ -139,9 +143,24 @@ fn main() {
         players.push(stats::retrieve_stats(player, args.mvp_calculation_mode.clone()));
     }
 
-    let game = create_game(args.game_type, args.team_count);
+    let mut game = create_game(args.game_type, args.team_count);
 
-    selection::calculate_advanced(game, players, &args.modifier_position, &args.modifier_team);
+    match args.algorithm {
+        Algorithm::Advanced_Selection => {
+            game = selection::calculate_advanced(game, players, &args.modifier_position, &args.modifier_team);
+        }
+        Algorithm::AI_Selection => {
+            unimplemented!("AI assisted selection is not here yet.");
+        }
+        Algorithm::Random_Random => {
+            game = selection::random_random(game, players, &args.modifier_position, &args.modifier_team);
+        }
+        Algorithm::Simple_Selection => {
+            unimplemented!("Simple selection is not ready yet.");
+        }
+    }
+
+    output_game_as_json(game);
 
 }
 
@@ -157,7 +176,12 @@ fn create_game(game : GameType, team_count : u8) -> Vec<Vec<PlayerSlot>> {
                 for player in &postion_array {
                     player_vec.push(
                         PlayerSlot { 
-                            position: *player, player_id: -1, smvp: -1.0, player_name : "".to_string() }
+                            position: *player,
+                            position_pretty: String::from(""),
+                            player_id: -1,
+                            smvp: -1.0,
+                            player_name : "Unfilled slot! Report to Metalface!".to_string()
+                        }
                     );
                 }
                 final_vec.push(player_vec);

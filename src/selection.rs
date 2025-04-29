@@ -2,9 +2,29 @@ use std::f64::MAX;
 
 use rand::{rng, seq::IndexedRandom};
 
-use crate::{stats::set_position_from_index, PlayerSlot, PlayerStats, PositionStats};
+use crate::{PlayerSlot, PlayerStats, PositionStats};
 
-pub fn calculate_advanced(mut game : Vec<Vec<PlayerSlot>>, mut players : Vec<PlayerStats>, _modifiers_position : &Option<Vec<u64>>, _modifiers_team : &Option<Vec<u64>>) {
+pub fn random_random(mut game : Vec<Vec<PlayerSlot>>, mut players : Vec<PlayerStats>, _modifiers_position : &Option<Vec<u64>>, _modifiers_team : &Option<Vec<u64>>) -> Vec<Vec<PlayerSlot>> {
+
+    let mut rng = rng();
+
+    for (team_index, team) in game.clone().iter().enumerate() {
+        for (slot_index, slot) in team.clone().iter().enumerate() {
+            let player = players.choose(&mut rng).unwrap().clone();
+            players.retain(|p| p.player_id != player.player_id);
+
+            let player_position_stats = retrieve_stat_block_from_position(slot.position, player.clone());
+
+            map_player_to_slot(player, player_position_stats, &mut game[team_index][slot_index]);
+
+        }
+    }
+
+    return game;
+
+}
+
+pub fn calculate_advanced(mut game : Vec<Vec<PlayerSlot>>, mut players : Vec<PlayerStats>, _modifiers_position : &Option<Vec<u64>>, _modifiers_team : &Option<Vec<u64>>) -> Vec<Vec<PlayerSlot>> {
 
     // Choose a random slot from a random team
     // Assign a player to that
@@ -70,15 +90,15 @@ pub fn calculate_advanced(mut game : Vec<Vec<PlayerSlot>>, mut players : Vec<Pla
     
     }
 
-    for (i, team) in game.iter().enumerate() {
-        println!("Team {}", i);
-        for slot in team {
-            println!("Player ID: {}, Player Position: {}, Player SMVP: {}, Player Name: {}", slot.player_id, set_position_from_index(slot.position), slot.smvp, slot.player_name);
-        }
-    }
+    return game;
 
 }
 
+fn map_player_to_slot(player : PlayerStats, pos_stats: PositionStats, slot : &mut PlayerSlot) {
+    slot.player_id = player.player_id as i64;
+    slot.player_name = player.player_name;
+    slot.smvp = calculate_smvp(pos_stats);
+}
 
 /// Calculate the magic number that the selector will use to rank players. The way to calculate this is up for debate
 fn calculate_smvp(stats : PositionStats) -> f64 {
