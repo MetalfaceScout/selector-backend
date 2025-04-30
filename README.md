@@ -12,7 +12,7 @@ The main player argument. Pass a player ID here to add that player to the main s
 Specifiy the type of game, this controls how many player and what positions are used.
 
 ``` -a --algorithm <algorithm> ``` Default: advanced-selection
-Decide which algoritm to use. Generally leave this default for the random yet matching algorithm.
+Decide which algorithm to use. Generally leave this default for the random yet matching algorithm.
 
 ``` -t --team-count <count> ``` Default: 2
 How many teams to use, for whatever strange reason.
@@ -28,3 +28,7 @@ Change the way the MVP (and hit diff) are calculated from the player's games. TO
 
 ``` -n -n-games <games> ``` Default: 50
 Only use n amount of games for stat (hit diff, MVP) calculation. Currently WIP.
+
+## Output
+
+This program outputs JSON into stdout. This is useful when I run it in the Laravel Webserver, as I can easily parse it right back into usable data.
