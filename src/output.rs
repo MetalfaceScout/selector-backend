@@ -20,10 +20,10 @@ pub fn output_game_text(mut game: Vec<Vec<PlayerSlot>>) {
     }
 
     for team_index in 0..game.len() {
-        print!{"Team {}", team_index};
+        print!{"Team {}\n", team_index};
         for player_index in 0..game[0].len() {
             let player = game[team_index][player_index].clone();
-            print!("Player: {}, Position: {}, SMVP: {}", player.player_name, player.position_pretty, player.smvp);
+            print!("Player: {}, Position: {}, SMVP: {}\n", player.player_name, player.position_pretty, player.smvp);
         }
     }
 }

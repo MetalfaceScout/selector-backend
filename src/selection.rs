@@ -1,6 +1,6 @@
 use std::f64::MAX;
 
-use rand::{rng, seq::IndexedRandom};
+use rand::{random_bool, rng, seq::IndexedRandom};
 
 use crate::{PlayerSlot, PlayerStats, PositionStats};
 
@@ -24,7 +24,11 @@ pub fn random_random(mut game : Vec<Vec<PlayerSlot>>, mut players : Vec<PlayerSt
 
 }
 
-pub fn calculate_advanced(mut game : Vec<Vec<PlayerSlot>>, mut players : Vec<PlayerStats>, _modifiers_position : &Option<Vec<u64>>, _modifiers_team : &Option<Vec<u64>>) -> Vec<Vec<PlayerSlot>> {
+pub fn calculate_advanced(mut game : Vec<Vec<PlayerSlot>>, mut players : Vec<PlayerStats>, modifiers_position : &Option<Vec<u64>>, _modifiers_team : &Option<Vec<u64>>) -> Vec<Vec<PlayerSlot>> { 
+
+    if let Some(modifiers) = modifiers_position {
+        (game, players) = assign_position_modifier_to_slot(game, players, modifiers);
+    }
 
     // Choose a random slot from a random team
     // Assign a player to that
@@ -36,26 +40,34 @@ pub fn calculate_advanced(mut game : Vec<Vec<PlayerSlot>>, mut players : Vec<Pla
     // Run once per slot on one team
     for slot_index in 0..game.clone().first().unwrap().len() {
 
-        //let slot_index = rand::random_range(0..game[0].len());
-
-        let player = players.choose(&mut rng).unwrap().clone();
-        players.retain(|p| p.player_id != player.player_id);
-
-        game[0][slot_index].player_id = player.player_id.try_into().unwrap();
-
-        // The position of the retrieved slot
+        let player;
         let position = game[0][slot_index].position;
+        let smvp;
+                        
+        let mut modifier_used = false;
 
-        // Fetch stats of that position
-        let stats = retrieve_stat_block_from_position(position, player.clone());
+        // Skip assigning a player if one is already assigned from modifiers
+
+        if game[0][slot_index].player_id != -1 {
+            // Find that player - grab their stats
+            smvp = game[0][slot_index].smvp;
+            modifier_used = true;
+        } else {
+            // Unassigned slot, randomly choose a player from the pool
+            player = players.choose(&mut rng).unwrap().clone();
+            players.retain(|p| p.player_id != player.player_id);
+            game[0][slot_index].player_id = player.player_id.try_into().unwrap();
+
+            let stats = retrieve_stat_block_from_position(position, player.clone());
+            smvp = calculate_smvp(stats);
+
+            game[0][slot_index].smvp = smvp;
+            game[0][slot_index].player_name = player.player_name.clone();
+        }
 
         // Match a player for each opposing team (usually just 1)
         for team_match in 1..game.len() {
             // Match the next closest player's position stats
-            let smvp = calculate_smvp(stats);
-                        
-            game[0][slot_index].smvp = smvp;
-            game[0][slot_index].player_name = player.player_name.clone();
 
             // At the end of this next for loop, should have the closest player in mvp
             let mut min_diff = MAX;
@@ -87,6 +99,18 @@ pub fn calculate_advanced(mut game : Vec<Vec<PlayerSlot>>, mut players : Vec<Pla
             game[team_match][slot_index].smvp = other_smvp_chosen;
             game[team_match][slot_index].player_name = other_name_chosen;
         }
+
+        // Switch the slot for team 0 and 1 if the modifer was used
+        if modifier_used { 
+            let switch = random_bool(0.5);
+            if switch {
+                let temp_player_slot_0 = game[0][slot_index].clone();
+                let temp_player_slot_1 = game[1][slot_index].clone();
+
+                game[0][slot_index] = temp_player_slot_1;
+                game[1][slot_index] = temp_player_slot_0;
+            }
+        }
     
     }
 
@@ -114,4 +138,30 @@ fn retrieve_stat_block_from_position(postion : u64, player : PlayerStats) -> Pos
         4 => {return player.medic_stats}
         _ => {panic!("This is wrong.")}
     }
+}
+
+fn assign_position_modifier_to_slot(mut game : Vec<Vec<PlayerSlot>>, mut players : Vec<PlayerStats>, modifiers_position : &Vec<u64>) -> (Vec<Vec<PlayerSlot>>, Vec<PlayerStats>) {
+
+    for modifiers_index in (0..modifiers_position.len()).step_by(2) {
+        let player_id = modifiers_position[modifiers_index];
+        let position = modifiers_position[modifiers_index+1];
+
+        let player = players.iter().find(|player| player.player_id == player_id).expect("selection: assign: Could not find passed player id in pool.").clone();
+        //TODO: There has to be a better way.
+        // Do I assign a player to a random team or always only the first team? 
+        // Random team causes problems as the advanced selector only matches with the first team.
+        let team_index = 0;
+
+        for slot_index in 0..game[team_index].len() {
+            if game[team_index][slot_index].position == position && game[team_index][slot_index].player_id == -1 {
+                let player_position_stats = retrieve_stat_block_from_position(game[team_index][slot_index].position, player.clone());
+                players.retain(|p| p.player_id != player.player_id);
+                map_player_to_slot(player.clone(), player_position_stats, &mut game[team_index][slot_index]);
+                break;
+            }
+        }
+
+    }
+
+    (game, players)
 }

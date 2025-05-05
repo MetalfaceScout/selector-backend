@@ -207,9 +207,75 @@ fn create_game(game : GameType, team_count : u8) -> Vec<Vec<PlayerSlot>> {
 
             return final_vec;
         }
-        
-        _ => {
-            todo!("All game types");
+
+        GameType::Sm5_10_Player => {
+    
+            let postion_array = vec![0, 1, 2, 3, 4];
+            let mut final_vec: Vec<Vec<PlayerSlot>> = Vec::new();
+            for _team in 0..team_count {
+
+                let mut player_vec: Vec<PlayerSlot> = Vec::new();
+                for player in &postion_array {
+                    player_vec.push(
+                        PlayerSlot { 
+                            position: *player,
+                            position_pretty: String::from(""),
+                            player_id: -1,
+                            smvp: -1.0,
+                            player_name : "Unfilled slot! Report to Metalface!".to_string()
+                        }
+                    );
+                }
+                final_vec.push(player_vec);
+            }
+
+            return final_vec;
+        }
+
+        GameType::Sm5_14_Player => {
+
+            let postion_array = vec![0, 1, 2, 2, 2, 3, 4];
+            let mut final_vec: Vec<Vec<PlayerSlot>> = Vec::new();
+            for _team in 0..team_count {
+
+                let mut player_vec: Vec<PlayerSlot> = Vec::new();
+                for player in &postion_array {
+                    player_vec.push(
+                        PlayerSlot { 
+                            position: *player,
+                            position_pretty: String::from(""),
+                            player_id: -1,
+                            smvp: -1.0,
+                            player_name : "Unfilled slot! Report to Metalface!".to_string()
+                        }
+                    );
+                }
+                final_vec.push(player_vec);
+            }
+
+            return final_vec;
+        }
+
+        GameType::Sm5_QueenBee => {
+            let postion_array = vec![2, 2, 3, 4];
+            let mut final_vec: Vec<Vec<PlayerSlot>> = Vec::new();
+            for _team in 0..team_count {
+
+                let mut player_vec: Vec<PlayerSlot> = Vec::new();
+                for player in &postion_array {
+                    player_vec.push(
+                        PlayerSlot { 
+                            position: *player,
+                            position_pretty: String::from(""),
+                            player_id: -1,
+                            smvp: -1.0,
+                            player_name : "Unfilled slot! Report to Metalface!".to_string()
+                        }
+                    );
+                }
+                final_vec.push(player_vec);
+            }
+            return final_vec;
         }
     }
 }
