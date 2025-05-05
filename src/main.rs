@@ -2,6 +2,7 @@ mod selection;
 mod stats;
 mod db;
 mod output;
+mod prediction;
 
 use core::panic;
 use clap::Parser;
