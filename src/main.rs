@@ -5,7 +5,7 @@ mod output;
 
 use core::panic;
 use clap::Parser;
-use output::output_game_as_json;
+use output::{output_game_as_json, output_game_text};
 use serde::Serialize;
 
 /// The backend of the Team Selector by Metalface - Intended to be used by the website
@@ -42,7 +42,11 @@ struct SelectorArgs {
 
     /// If using last-n calculation mode, specify the amount of games to include
     #[arg(short, long, default_value_t = 50)]
-    n_games: u64
+    n_games: u64,
+
+    /// Select the output method to use
+    #[arg(long, default_value_t, value_enum)]
+    output_method: OutputMethods
 }
 
 #[derive(clap::ValueEnum, Default, Debug, Clone)]
@@ -53,6 +57,14 @@ enum GameType {
     Sm5_14_Player,
     Sm5_10_Player,
     Sm5_QueenBee,
+}
+
+#[derive(clap::ValueEnum, Default, Debug, Clone)]
+#[allow(non_camel_case_types)]
+enum OutputMethods {
+    #[default]
+    Json,
+    Plaintext
 }
 
 #[derive(clap::ValueEnum, Default, Debug, Clone)]
@@ -112,9 +124,7 @@ struct PlayerStats {
 
 fn main() {
     let args = SelectorArgs::parse();
-
     let mut players: Vec<PlayerStats> = Vec::new();
-
     let expected_player_count : u64;
 
     match args.game_type {
@@ -160,7 +170,14 @@ fn main() {
         }
     }
 
-    output_game_as_json(game);
+    match args.output_method {
+        OutputMethods::Json => {
+            output_game_as_json(game);
+        }
+        OutputMethods::Plaintext => {
+            output_game_text(game);
+        }
+    }
 
 }
 
