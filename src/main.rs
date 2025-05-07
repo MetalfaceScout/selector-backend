@@ -33,6 +33,10 @@ struct SelectorArgs {
     #[arg(short, long)]
     player: Vec<u64>,
 
+    /// Add a new player to the selection - default smvp of 7
+    #[arg(short='n', long)]
+    new_player: Vec<String>,
+
     /// Modify the teams to force a player to play a position - Enter player_id followed by the positon index
     #[arg(long, num_args=2, value_name = "INT")]
     modifier_position: Option<Vec<u64>>,
@@ -42,7 +46,7 @@ struct SelectorArgs {
     modifier_team: Option<Vec<u64>>,
 
     /// If using last-n calculation mode, specify the amount of games to include
-    #[arg(short, long, default_value_t = 50)]
+    #[arg(long, default_value_t = 50)]
     n_games: u64,
 
     /// Select the output method to use
@@ -146,13 +150,18 @@ fn main() {
         }
     }
 
-    if args.player.len() < expected_player_count.try_into().unwrap() {
+    if args.player.len() + args.new_player.len() < expected_player_count.try_into().unwrap() {
         panic!("Not enough players were given to create teams.");
     }
 
     for player in args.player {
         players.push(stats::retrieve_stats(player, args.mvp_calculation_mode.clone()));
     }
+
+    for player in args.new_player {
+        players.push(stats::retrieve_stats_new(player));
+    }
+    
 
     let mut game = create_game(args.game_type, args.team_count);
 

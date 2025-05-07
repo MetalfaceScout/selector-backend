@@ -74,6 +74,43 @@ pub fn retrieve_stats(player_id : u64, mvp_calc_method : MVPCalculationMode) -> 
     return final_stats;
 }
 
+pub fn retrieve_stats_new(player_name : String) -> PlayerStats {
+
+
+    let mut stats = HashMap::new();
+
+    for position in 0u64..5 {
+
+        let position_string = set_position_from_index(position);
+
+        let mvp_stats = 4.0;
+        let hit_diff_stats = 1.0;
+
+
+        let position_stats = PositionStats {
+            hit_diff: hit_diff_stats,
+            mvp: mvp_stats,
+            games_played: 0
+        };
+
+        stats.insert(position_string, position_stats);
+        //all_games_played += game_count;
+    }
+
+    let final_stats = PlayerStats {
+        player_id: 8008153,
+        player_name,
+        commander_stats: stats.get("Commander").unwrap().clone(),
+        heavy_stats: stats.get("Heavy Weapons").unwrap().clone(),
+        scout_stats: stats.get("Scout").unwrap().clone(),
+        ammo_stats: stats.get("Ammo Carrier").unwrap().clone(),
+        medic_stats: stats.get("Medic").unwrap().clone(),
+        //total_games_played: all_games_played,
+    };
+
+    return final_stats;
+}
+
 fn find_median<T>(values: &[T]) -> Option<f64>
 where
     T: Copy + Into<f64> + PartialOrd,
