@@ -1,4 +1,4 @@
-use std::collections::HashMap;
+use std::{collections::HashMap, hash::{DefaultHasher, Hash, Hasher}};
 
 use crate::{db::{create_db_client, set_database_params}, MVPCalculationMode, PlayerStats, PositionStats};
 
@@ -96,9 +96,11 @@ pub fn retrieve_stats_new(player_name : String) -> PlayerStats {
         stats.insert(position_string, position_stats);
         //all_games_played += game_count;
     }
-
+    let mut hasher = DefaultHasher::new();
+    player_name.hash(&mut hasher);
+    let final_id = hasher.finish().isqrt();
     let final_stats = PlayerStats {
-        player_id: 8008153,
+        player_id: final_id,
         player_name,
         commander_stats: stats.get("Commander").unwrap().clone(),
         heavy_stats: stats.get("Heavy Weapons").unwrap().clone(),

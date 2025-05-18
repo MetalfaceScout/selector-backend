@@ -1,4 +1,3 @@
-use std::f64::MAX;
 
 use rand::{random_bool, rng, seq::IndexedRandom};
 
@@ -70,8 +69,8 @@ pub fn calculate_advanced(mut game : Vec<Vec<PlayerSlot>>, mut players : Vec<Pla
             // Match the next closest player's position stats
 
             // At the end of this next for loop, should have the closest player in mvp
-            let mut min_diff = MAX;
-            let mut diff_index: usize = 0;
+            let mut min_diff = f64::MAX;
+            let mut diff_index: usize = usize::MAX;
 
             let mut other_smvp_chosen: f64 = 0.0;
             let mut other_name_chosen = String::from("");
@@ -92,7 +91,26 @@ pub fn calculate_advanced(mut game : Vec<Vec<PlayerSlot>>, mut players : Vec<Pla
                 }
             }
 
-            let matched_player = players.get(diff_index).unwrap().clone();
+            let matched_player_wrapped = players.get(diff_index);
+            let matched_player;
+            match matched_player_wrapped {
+                Some(player) => {matched_player = player.clone()}
+                None => {
+                    eprintln!("Players:");
+                    for player in players {
+                        eprintln!("Player Name: {}", player.player_name)
+                    }
+                    panic!("
+                        No player was found in calculate_advanced during the selection process.\n
+                        Contact Metalface if you're seeing this.\n
+                        Chosen Player Name: {}\n,
+                        Matching Player ID: {}\n,
+                        Matching Player Name: {}\n",
+                        other_name_chosen,
+                        game[0][slot_index].player_id,
+                        game[0][slot_index].player_name)
+                }
+            }
             players.retain(|p| p.player_id != matched_player.player_id);
 
             game[team_match][slot_index].player_id = matched_player.player_id as i64;
