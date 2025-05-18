@@ -6,7 +6,6 @@ pub fn retrieve_stats(player_id : u64, mvp_calc_method : MVPCalculationMode) -> 
 
     let params = set_database_params();
     let mut db_client = create_db_client(params);
-    //let mut all_games_played = 0u64;
 
     let query = format!("SELECT mvp_points, hit_diff, position, player_name FROM scorecards WHERE player_id = {}", player_id);
     let results = db_client.query(&query, &[]).expect("Failed to retrieve player stats");
@@ -76,7 +75,6 @@ pub fn retrieve_stats(player_id : u64, mvp_calc_method : MVPCalculationMode) -> 
 
 pub fn retrieve_stats_new(player_name : String) -> PlayerStats {
 
-
     let mut stats = HashMap::new();
 
     for position in 0u64..5 {
@@ -85,7 +83,6 @@ pub fn retrieve_stats_new(player_name : String) -> PlayerStats {
 
         let mvp_stats = 4.0;
         let hit_diff_stats = 1.0;
-
 
         let position_stats = PositionStats {
             hit_diff: hit_diff_stats,

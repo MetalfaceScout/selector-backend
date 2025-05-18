@@ -1,4 +1,3 @@
-
 use rand::{random_bool, rng, seq::IndexedRandom};
 
 use crate::{PlayerSlot, PlayerStats, PositionStats};

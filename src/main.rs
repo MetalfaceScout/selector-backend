@@ -21,7 +21,7 @@ struct SelectorArgs {
     #[arg(short, long, default_value_t, value_enum)]
     algorithm: Algorithm,
 
-    /// Select the MVP Calculation mode to use
+    /// Select the MVP Calculation mode to use - Unimplemented
     #[arg(short, long, default_value_t, value_enum)]
     mvp_calculation_mode: MVPCalculationMode,
 
@@ -41,11 +41,11 @@ struct SelectorArgs {
     #[arg(long, num_args=2, value_name = "INT")]
     modifier_position: Option<Vec<u64>>,
 
-    /// Modify a player to force them to be on a certain team - Enter player_id followed by the team index
+    /// Modify a player to force them to be on a certain team - Enter player_id followed by the team index - Unimplemented
     #[arg(long, num_args=2, value_name = "INT")]
     modifier_team: Option<Vec<u64>>,
 
-    /// If using last-n calculation mode, specify the amount of games to include
+    /// If using last-n calculation mode, specify the amount of games to include - Unimplemented
     #[arg(long, default_value_t = 50)]
     n_games: u64,
 
